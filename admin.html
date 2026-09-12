@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OBALUGO Admin</title>
+<style>body{margin:0;background:#090910;color:#fff;font-family:Arial,sans-serif}.wrap{max-width:720px;margin:auto;padding:18px}.card{background:#151521;border:1px solid #29293b;border-radius:18px;padding:20px;margin:14px 0}input{width:100%;padding:13px;margin:7px 0;border-radius:10px;border:1px solid #39394b;background:#0e0e16;color:#fff;box-sizing:border-box}button{border:0;border-radius:10px;padding:12px 15px;font-weight:bold;cursor:pointer}.green{background:#20c878}.red{background:#e05252;color:#fff}.purple{background:#6c5ce7;color:#fff}.row{padding:12px 0;border-bottom:1px solid #29293b}.muted{color:#aaa;font-size:13px}.hidden{display:none}</style></head><body><div class="wrap"><h1>⚙️ OBALUGO ADMIN</h1>
+<div id="login" class="card"><h2>Admin Login</h2><input id="lu" placeholder="Admin username"><input id="lp" type="password" placeholder="Admin password"><button class="purple" onclick="login()">Login</button></div>
+<div id="panel" class="hidden"><div class="card"><h2>➕ Add CPM account</h2><input id="u" placeholder="CPM email / username"><input id="p" placeholder="CPM password"><button class="green" onclick="add()">Add account</button></div>
+<div class="card"><h2>Accounts</h2><div id="list"></div></div><button class="red" onclick="logout()">Logout</button></div></div>
+<script>
+async function login(){let r=await fetch("/api/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:lu.value,password:lp.value})});if(r.ok)show();else alert("Invalid login")}
+async function show(){loginBox.classList.add("hidden");panel.classList.remove("hidden");load()}
+async function load(){let r=await fetch("/api/admin/accounts");if(r.status===401)return;let a=await r.json();list.innerHTML=a.length?"":"<p class='muted'>No accounts.</p>";a.forEach(x=>list.innerHTML+=`<div class="row"><b>#${x.id}</b> ${esc(x.username)} — ${x.claimed?"CLAIMED":"AVAILABLE"} <button class="red" onclick="del(${x.id})">Delete</button></div>`)}
+async function add(){if(!u.value||!p.value)return alert("Enter both fields");let r=await fetch("/api/admin/accounts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u.value,password:p.value})});if(r.ok){u.value=p.value="";load()}else alert("Could not add account")}
+async function del(id){if(!confirm("Delete this account?"))return;await fetch("/api/admin/accounts/"+id,{method:"DELETE"});load()}
+async function logout(){await fetch("/api/admin/logout",{method:"POST"});location.reload()}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+const loginBox=document.getElementById("login"),panel=document.getElementById("panel"),list=document.getElementById("list"),u=document.getElementById("u"),p=document.getElementById("p"),lu=document.getElementById("lu"),lp=document.getElementById("lp");
+fetch("/api/admin/status").then(r=>r.json()).then(x=>x.loggedIn&&show());
+</script></body></html>
