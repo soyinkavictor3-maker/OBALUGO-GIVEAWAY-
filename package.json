@@ -1,13 +1,17 @@
 {
-  "name": "obalugo-giveaway",
+  "name": "obalugo-giveaway-telegram-bot",
   "version": "1.0.0",
-  "private": true,
+  "description": "OBALUGO GIVEAWAY Telegram bot",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "better-sqlite3": "^11.8.1",
-    "express": "^5.1.0",
-    "express-session": "^1.18.1"
+    "dotenv": "^16.4.7",
+    "node-telegram-bot-api": "^0.66.0"
   }
 }
